@@ -80,14 +80,46 @@ class Bouquets(models.Model):
         on_delete=models.CASCADE, 
         verbose_name="Цветовая гамма")
     image_id = models.ForeignKey(Images, on_delete=models.CASCADE, verbose_name="Картинка")
-    price = models.IntegerField(default=0, verbose_name="Цена")
+    
 
     def __str__(self):
-        return f'{self.short_title} {self.price}'
+        return f'{self.short_title}'
     
     class Meta:
         verbose_name = "Букет"
         verbose_name_plural = "Список букетов"
+
+
+class Products(models.Model):
+    title = models.CharField(max_length=50,blank=True, null=True, default=None, verbose_name="Наименование")
+    price = models.IntegerField(default=0, blank=True, null=True, verbose_name="Цена")
+    description = models.TextField(blank=True, default=None, null=True, verbose_name="Описание")
+    image_id = models.ForeignKey(
+        Images,
+        blank=True, 
+        null=True, 
+        on_delete=models.CASCADE, 
+        verbose_name="Картинка")
+    
+
+    def __str__(self):
+        return f"{self.title}"
+    
+    class Meta:
+        verbose_name = "Позиция для букета"
+        verbose_name_plural = "Позиции для букета"
+
+
+class ProductsBouquets(models.Model):
+    products = models.ForeignKey(Products, on_delete=models.CASCADE, verbose_name="Позиция")
+    bouquets = models.ForeignKey(Bouquets, on_delete=models.CASCADE, verbose_name="Букет")
+
+    def __str__(self):
+        return f"{self.products.title} {self.bouquets.short_title}"
+    
+    class Meta:
+        verbose_name = "Позиция - букет"
+        verbose_name_plural = "Позиции - букет"
 
 
 class ConsultationRequests(models.Model):
@@ -118,11 +150,15 @@ class Orders(models.Model):
     ONE = 1
     TWO = 2
     THREE = 3
+    FOUR = 4
+    FIVE = 5
 
     STATUS_CHOICES = [
         (ONE, "Принят"),
         (TWO, "Готовиться"),
-        (THREE, "Доставка")
+        (THREE, "Доставка"),
+        (FOUR, "Выполнен"),
+        (FIVE, "Отменен"),
     ]
 
     client_id = models.ForeignKey(
@@ -135,9 +171,6 @@ class Orders(models.Model):
         verbose_name="Дата исполнения",
         )
     
-    bouquet_id = models.ManyToManyField(
-        Bouquets,
-        verbose_name="Готовые букеты")
 
     status = models.IntegerField(
         choices=STATUS_CHOICES,
@@ -148,6 +181,8 @@ class Orders(models.Model):
         default="",
         verbose_name="Комментарий к заказу"
     )
+    created = models.DateTimeField(auto_now_add=True, auto_now=False)
+    updated = models.DateTimeField(auto_now_add=False, auto_now=True)
 
     delivery_address = models.CharField(
         max_length=250,
@@ -156,10 +191,6 @@ class Orders(models.Model):
         verbose_name="Адрес доставки"
         )
     
-    all_price = models.IntegerField(
-        default=0,
-        verbose_name="Общая стоимость"
-    )
     
     def __str__(self):
         return f'{self.client_id.name}, {self.delivery_address}'
@@ -167,3 +198,21 @@ class Orders(models.Model):
     class Meta:
         verbose_name = "Заказ"
         verbose_name_plural = "Заказы"
+
+
+class ProductInOrder(models.Model):
+    order = models.ForeignKey(Orders, blank=True, null=True, default=None, on_delete=models.CASCADE)
+    product = models.ForeignKey(Products, blank=True, null=True, default=None, on_delete=models.CASCADE)
+    bouquets = models.ForeignKey(Bouquets, blank=True, null=True, default=None, on_delete=models.CASCADE)
+
+    def __str__(self):
+        if self.product and self.bouquets:
+            return f"{self.product} {self.bouquets}"
+        elif self.product:
+            return f"{self.product}"
+        elif self.bouquets:
+            return f"{self.bouquets}"
+    
+    class Meta:
+        verbose_name = "Товар - заказ"
+        verbose_name_plural = "Товары - заказы"
