@@ -82,7 +82,7 @@ class ProductInOrderInlines(admin.TabularInline):
 
 @admin.register(Orders)
 class OrdersAdmin(admin.ModelAdmin):
-    list_display = ['client_id', 'execution_date', 'status', 'comment', 'delivery_address', 'price_order']
+    list_display = ['client_id', 'execution_date', 'status', 'comment', 'delivery_address', 'all_price']
     inlines = [ProductInOrderInlines]
 
     def price_order(self, order):

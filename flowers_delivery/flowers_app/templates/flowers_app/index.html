@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <title></title>
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'flowers_app/css/style.css' %}">
+</head>
+<body>
+  
+    <div class="wrap-orders">
+      <div id="head-orders">
+        <h1>Заказы созданные сегодня {{date}}</h1>
+        <ul>
+            <li>
+                <p>Имя</p>
+            </li>
+            <li>
+                <p>Время исполнения</p>
+            </li>
+            <li>
+                <p>Статус заказы</p>
+            </li>
+            <li>
+                <p>Комментарий к заказу</p>
+            </li>
+            <li>
+                <p>Адрес доставки</p>
+            </li>
+            <li>
+                <p>Общая стоимость</p>
+            </li>
+        </ul>
+      </div>
+      {% for order in orders %}
+        <ul class="orders-ul">
+        
+          <li class="order">
+            <p>{{order.client_id.name}}</p>
+          </li>
+          <li class="order">
+            <p>{{order.execution_date}}</p>
+          </li>
+          <li class="order">
+            <p>{{order.status}}</p>
+          </li>
+          <li class="order">
+            <p>{{order.comment}}</p>
+          </li>
+          <li class="order">
+            <p>{{order.delivery_address}}</p>
+          </li>
+          <li class="order">
+            <p>{{order.all_price}} руб.</p>
+          </li>
+          
+        
+        </ul>
+      {% endfor %}
+      <h1 id="all_summ">
+        Общая сумма заказов: 
+        <span>{{all_summ}} руб</span>
+      </h1>
+    </div>
+    
+    
+  
+</body>
+</html>

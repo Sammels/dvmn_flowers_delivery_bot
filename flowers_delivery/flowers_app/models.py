@@ -78,10 +78,11 @@ class Bouquets(models.Model):
         on_delete=models.CASCADE,
         verbose_name="Цветовая гамма")
     image_id = models.ForeignKey(Images, on_delete=models.CASCADE, verbose_name="Картинка")
+    price = models.IntegerField(default=0)
     
 
     def __str__(self):
-        return f'{self.short_title} {self.price}'
+        return f'{self.short_title}'
 
 
     class Meta:
