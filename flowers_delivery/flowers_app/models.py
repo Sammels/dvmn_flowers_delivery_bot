@@ -1,8 +1,6 @@
 from datetime import date
 from django.db import models
 
-# Create your models here.
-
 
 class TelegramUser(models.Model):
     chat_id = models.CharField(
@@ -14,12 +12,12 @@ class TelegramUser(models.Model):
         max_length=30,
         default="",
         verbose_name="Имя клиента"
-        )
+    )
     phone = models.CharField(
         max_length=30,
         default="",
         verbose_name="Номер клиента"
-        )
+    )
     address = models.CharField(
         max_length=300,
         default="",
@@ -39,7 +37,7 @@ class Categories(models.Model):
 
     def __str__(self):
         return f'{self.category_name}'
-    
+
     class Meta:
         verbose_name = "Категория"
         verbose_name_plural = "Категории"
@@ -53,7 +51,7 @@ class ColorSpectrum(models.Model):
 
     def __str__(self):
         return f'{self.color_spectrum}'
-    
+
     class Meta:
         verbose_name = "Цветовая гамма"
         verbose_name_plural = "Цветовые гаммы"
@@ -65,26 +63,27 @@ class Images(models.Model):
 
     def __str__(self):
         return f'{self.alt}'
-    
+
     class Meta:
         verbose_name = "Картинка"
         verbose_name_plural = "Картинки"
 
 
 class Bouquets(models.Model):
-    short_title = models.CharField(max_length=30, verbose_name="Название букета") 
+    short_title = models.CharField(max_length=30, verbose_name="Название букета")
     description = models.TextField(verbose_name="Подробное описание")
     category = models.ManyToManyField(Categories, verbose_name="Категория")
     color_spectrum = models.ForeignKey(
         ColorSpectrum,
-        on_delete=models.CASCADE, 
+        on_delete=models.CASCADE,
         verbose_name="Цветовая гамма")
     image_id = models.ForeignKey(Images, on_delete=models.CASCADE, verbose_name="Картинка")
     
 
     def __str__(self):
-        return f'{self.short_title}'
-    
+        return f'{self.short_title} {self.price}'
+
+
     class Meta:
         verbose_name = "Букет"
         verbose_name_plural = "Список букетов"
@@ -140,7 +139,7 @@ class ConsultationRequests(models.Model):
 
     def __str__(self):
         return f"{self.phone} - {self.status}"
-    
+
     class Meta:
         verbose_name = "Заявка на консультацию"
         verbose_name_plural = "Заявки на консультацию"
@@ -165,12 +164,18 @@ class Orders(models.Model):
         TelegramUser,
         on_delete=models.CASCADE,
         verbose_name="Клиент"
-        )
-    execution_date = models.DateField(
+    )
+    execution_date = models.CharField(
+        max_length=30,
         default=date.today,
         verbose_name="Дата исполнения",
+
         )
-    
+
+    bouquet_id = models.ManyToManyField(
+        Bouquets,
+        verbose_name="Готовые букеты", blank=True)
+
 
     status = models.IntegerField(
         choices=STATUS_CHOICES,
@@ -186,15 +191,21 @@ class Orders(models.Model):
 
     delivery_address = models.CharField(
         max_length=250,
-        blank=False, 
+        blank=False,
         default="",
         verbose_name="Адрес доставки"
+
         )
     
-    
+
+    all_price = models.IntegerField(
+        default=0,
+        verbose_name="Общая стоимость"
+    )
+
     def __str__(self):
         return f'{self.client_id.name}, {self.delivery_address}'
-    
+
     class Meta:
         verbose_name = "Заказ"
         verbose_name_plural = "Заказы"
