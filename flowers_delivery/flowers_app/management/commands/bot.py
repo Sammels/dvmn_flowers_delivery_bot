@@ -13,7 +13,7 @@ from flowers_app.models import Categories, ColorSpectrum, Bouquets, Consultation
 
 Env().read_env()
 token = Env().str('TG_TOKEN')
-# payment_token = Env().str('PAYMENTS_TOKEN')
+payment_token = Env().str('PAYMENTS_TOKEN')
 bot = telebot.TeleBot(token)
 
 chats = {}
@@ -29,7 +29,7 @@ def callback_query(call):
         bot.send_invoice(call.message.chat.id,
                          title=f'Покупка букета {chats[call.message.chat.id]["bouquet"]}',
                          description=f'Время доставки: {chats[call.message.chat.id]["delivery_time"]}',
-                        #  provider_token=payment_token,
+                         provider_token=payment_token,
                          currency='rub',
                          photo_url='https://appleinsider.ru/wp-content/uploads/2023/02/telegram_premium_logo_subscription-750x464.png',
                          photo_width=416,
