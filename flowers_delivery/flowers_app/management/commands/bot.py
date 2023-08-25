@@ -55,7 +55,6 @@ def main_menu(message):
     for category in Categories.objects.all().iterator():
         markup.add(KeyboardButton(category.category_name))
     bot.send_photo(message.chat.id,
-                   # TODO Добавить фото из каталога
                    r'https://www.ribbonflowers.com/vitrin_resimler/727_500.jpg',
                    'К какому событию готовимся?', reply_markup=markup)
 
@@ -137,13 +136,11 @@ def choose_bouquet(message, page=1):
             markup.add(KeyboardButton('<--- Назад'),
                        KeyboardButton(f'{page}/{bouquets.count()}'),
                        KeyboardButton('Вперёд --->'))
-            # TODO Добавить переменную для подтягивавания фото
-            # photo = os.path.join('media', f'{bouquets[page - 1].image_id.path}')
+            photo = os.path.join('media', f'{bouquets[page - 1].image_id.path}')
             bot.send_photo(message.chat.id,
-                           r'https://img.freepik.com/premium-photo/the-most-beautiful-flower-in-the-world-close-up-generative-ai_691560-9326.jpg?',
-                           # InputFile(photo)
-                           f'Букет "{bouquets[page - 1].short_title}"\n\n{bouquets[page - 1].description}\n\n'
-                           f'Состав: \n\nЦена: {bouquets[page - 1].price} рублей',
+                           InputFile(photo),
+                           f'Букет "{bouquets[page - 1].short_title}"\n\n{bouquets[page - 1].description}'
+                           f'\n\nЦена: {bouquets[page - 1].price} рублей',
                            reply_markup=markup)
             return bot.register_next_step_handler(message, choose_bouquet, page)
         else:
@@ -160,13 +157,11 @@ def choose_bouquet(message, page=1):
             markup.add(KeyboardButton('<--- Назад'),
                        KeyboardButton(f'{page}/{bouquets.count()}'),
                        KeyboardButton(f'Вперёд --->'))
-            # TODO Добавить переменную для подтягивавания фото
-            # photo = os.path.join('media', f'{bouquets[page - 1].image_id.path}')
+            photo = os.path.join('media', f'{bouquets[page - 1].image_id.path}')
             bot.send_photo(message.chat.id,
-                           r'https://img.freepik.com/premium-photo/the-most-beautiful-flower-in-the-world-close-up-generative-ai_691560-9326.jpg?',
-                           # InputFile(photo)
+                           InputFile(photo),
                            f'Букет "{bouquets[page - 1].short_title}"\n\n{bouquets[page - 1].description}\n\n'
-                           f'Состав: \n\nЦена: {bouquets[page - 1].price} рублей',
+                           f'Цена: {bouquets[page - 1].price} рублей',
                            reply_markup=markup)
 
             return bot.register_next_step_handler(message, choose_bouquet, page)
@@ -194,13 +189,12 @@ def choose_bouquet(message, page=1):
             markup.add(KeyboardButton('<--- Назад'),
                        KeyboardButton(f'1/{bouquets.count()}'),
                        KeyboardButton('Вперёд --->'))
-            # TODO Добавить переменную для подтягивавания фото
-            # photo = os.path.join('media', f'{bouquets[page - 1].image_id.path}')
+
+            photo = os.path.join('media', f'{bouquets[page - 1].image_id.path}')
             bot.send_photo(message.chat.id,
-                           r'https://img.freepik.com/premium-photo/the-most-beautiful-flower-in-the-world-close-up-generative-ai_691560-9326.jpg?',
-                           # InputFile(photo)
-                           f'Букет "{bouquets[page - 1].short_title}"\n\n{bouquets[page - 1].description}\n\n'
-                           f'Состав: \n\nЦена: {bouquets[page - 1].price} рублей',
+                           InputFile(photo),
+                           f'Букет "{bouquets[page - 1].short_title}"\n\n{bouquets[page - 1].description}'
+                           f'\n\nЦена: {bouquets[page - 1].price} рублей',
                            reply_markup=markup)
             return bot.register_next_step_handler(message, choose_bouquet, page)
         except IndexError:
@@ -221,13 +215,11 @@ def get_catalog(message, page=1):
             markup.add(KeyboardButton('<--- Назад'),
                        KeyboardButton(f'{page}/{bouquets.count()}'),
                        KeyboardButton('Вперёд --->'))
-            # TODO Добавить переменную для подтягивавания фото
-            # photo = os.path.join('media', f'{bouquets[page - 1].image_id.path}')
+            photo = os.path.join('media', f'{bouquets[page - 1].image_id.path}')
             bot.send_photo(message.chat.id,
-                           r'https://img.freepik.com/premium-photo/the-most-beautiful-flower-in-the-world-close-up-generative-ai_691560-9326.jpg?',
-                           # InputFile(photo)
-                           f'Букет "{bouquets[page - 1].short_title}"\n\n{bouquets[page - 1].description}\n\n'
-                           f'Состав: \n\nЦена: {bouquets[page - 1].price} рублей',
+                           InputFile(photo),
+                           f'Букет "{bouquets[page - 1].short_title}"\n\n{bouquets[page - 1].description}'
+                           f'\n\nЦена: {bouquets[page - 1].price} рублей',
                            reply_markup=markup)
             return bot.register_next_step_handler(message, get_catalog, page)
         else:
@@ -243,13 +235,11 @@ def get_catalog(message, page=1):
             markup.add(KeyboardButton('<--- Назад'),
                        KeyboardButton(f'{page}/{bouquets.count()}'),
                        KeyboardButton(f'Вперёд --->'))
-            # TODO Добавить переменную для подтягивавания фото
-            # photo = os.path.join('media', f'{bouquets[page - 1].image_id.path}')
+            photo = os.path.join('media', f'{bouquets[page - 1].image_id.path}')
             bot.send_photo(message.chat.id,
-                           r'https://img.freepik.com/premium-photo/the-most-beautiful-flower-in-the-world-close-up-generative-ai_691560-9326.jpg?',
-                           # InputFile(photo)
-                           f'Букет "{bouquets[page - 1].short_title}"\n\n{bouquets[page - 1].description}\n\n'
-                           f'Состав: \n\nЦена: {bouquets[page - 1].price} рублей',
+                           InputFile(photo),
+                           f'Букет "{bouquets[page - 1].short_title}"\n\n{bouquets[page - 1].description}'
+                           f'\n\nЦена: {bouquets[page - 1].price} рублей',
                            reply_markup=markup)
 
             return bot.register_next_step_handler(message, get_catalog, page)
@@ -273,13 +263,11 @@ def get_catalog(message, page=1):
             markup.add(KeyboardButton('<--- Назад'),
                        KeyboardButton(f'1/{bouquets.count()}'),
                        KeyboardButton('Вперёд --->'))
-            # TODO Добавить переменную для подтягивавания фото
-            # photo = os.path.join('media', f'{bouquets[page - 1].image_id.path}')
+            photo = os.path.join('media', f'{bouquets[page - 1].image_id.path}')
             bot.send_photo(message.chat.id,
-                           r'https://img.freepik.com/premium-photo/the-most-beautiful-flower-in-the-world-close-up-generative-ai_691560-9326.jpg?',
-                           # InputFile(photo)
-                           f'Букет "{bouquets[page - 1].short_title}"\n\n{bouquets[page - 1].description}\n\n'
-                           f'Состав: \n\nЦена: {bouquets[page - 1].price} рублей',
+                           InputFile(photo),
+                           f'Букет "{bouquets[page - 1].short_title}"\n\n{bouquets[page - 1].description}'
+                           f'\n\nЦена: {bouquets[page - 1].price} рублей',
                            reply_markup=markup)
             return bot.register_next_step_handler(message, get_catalog, page)
         except IndexError:
