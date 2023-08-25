@@ -160,6 +160,10 @@ class Orders(models.Model):
         verbose_name="Общая стоимость"
     )
 
+    payment = models.BooleanField(
+        default=False
+    )
+
     def __str__(self):
         return f'{self.client_id.name}, {self.delivery_address}'
 

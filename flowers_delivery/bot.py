@@ -1,5 +1,6 @@
 from environs import Env
-from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, ReplyKeyboardMarkup, InputFile
+from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, ReplyKeyboardMarkup, InputFile, \
+    LabeledPrice
 import telebot
 import os
 import django
@@ -10,6 +11,7 @@ from flowers_app.models import Categories, ColorSpectrum, Bouquets, Consultation
 
 Env().read_env()
 token = Env().str('TG_TOKEN')
+payment_token = Env().str('PAYMENTS_TOKEN')
 bot = telebot.TeleBot(token)
 
 chats = {}
@@ -22,8 +24,20 @@ def callback_query(call):
     if call.data == 'main':
         main_menu(call.message)
     if call.data == 'payment':
-        # TODO Добавить оплату
-        pass
+        bot.send_invoice(call.message.chat.id,
+                         title=f'Покупка букета {chats[call.message.chat.id]["bouquet"]}',
+                         description=f'Время доставки: {chats[call.message.chat.id]["delivery_time"]}',
+                         provider_token=payment_token,
+                         currency='rub',
+                         photo_url='https://appleinsider.ru/wp-content/uploads/2023/02/telegram_premium_logo_subscription-750x464.png',
+                         photo_width=416,
+                         photo_height=234,
+                         photo_size=416,
+                         is_flexible=False,
+                         prices=[LabeledPrice(label='Покупка букета',
+                                              amount=chats[call.message.chat.id]['bouquet_price'] * 100)],
+                         invoice_payload='test-invoice-payload',
+                         )
 
 
 @bot.message_handler(commands=['start'])
@@ -159,6 +173,7 @@ def choose_bouquet(message, page=1):
             return choose_bouquet(message)
 
     elif message.text == 'Заказать букет':
+        chats[message.chat.id]['bouquet_price'] = bouquets[page - 1].price
         get_bouquet(message, 1, bouquets[page - 1].short_title)
 
     elif message.text == 'Заказать консультацию':
@@ -241,6 +256,7 @@ def get_catalog(message, page=1):
             return get_catalog(message)
 
     elif message.text == 'Заказать букет':
+        chats[message.chat.id]['bouquet_price'] = bouquets[page - 1].price
         get_bouquet(message, 1, bouquets[page - 1].short_title)
 
     elif message.text == 'Заказать консультацию':
@@ -328,10 +344,28 @@ def get_bouquet(message, step, bouquets=0):
                                       comment=user['comment'],
                                       all_price=Bouquets.objects.get(short_title=user['bouquet']).price)
         order.bouquet_id.add(Bouquets.objects.get(short_title=user['bouquet']).id)
+        user['order_id'] = order.id
         markup = InlineKeyboardMarkup()
         markup.add(InlineKeyboardButton('Да', callback_data='payment'))
         markup.add(InlineKeyboardButton('На главную', callback_data='main'))
         bot.send_message(message.chat.id, 'Ваш заказ оформлен.Желаете оплатить сразу?', reply_markup=markup)
+
+
+@bot.pre_checkout_query_handler(func=lambda query: True)
+def checkout(pre_checkout_query):
+    bot.answer_pre_checkout_query(pre_checkout_query.id, ok=True,
+                                  error_message="Aliens tried to steal your card's CVV, but we successfully protected your credentials,"
+                                                " try to pay again in a few minutes, we need a small rest.")
+
+
+@bot.message_handler(content_types=['successful_payment'])
+def got_payment(message):
+    Orders.objects.filter(id=chats[message.chat.id]["order_id"]).update(payment=True)
+    markup = InlineKeyboardMarkup()
+    markup.add(InlineKeyboardButton('Перейти на главное меню', callback_data='main'))
+    bot.send_message(message.chat.id,
+                     'Спасибо за оплату! Ваш букет будет доставлен во время! Хорошего Вам дня!',
+                     parse_mode='Markdown', reply_markup=markup)
 
 
 def run_bot():
