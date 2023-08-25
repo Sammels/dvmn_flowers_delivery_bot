@@ -1,3 +1,5 @@
+from django.core.management.base import BaseCommand
+from django.conf import settings
 from environs import Env
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, ReplyKeyboardMarkup, InputFile, \
     LabeledPrice
@@ -11,7 +13,7 @@ from flowers_app.models import Categories, ColorSpectrum, Bouquets, Consultation
 
 Env().read_env()
 token = Env().str('TG_TOKEN')
-payment_token = Env().str('PAYMENTS_TOKEN')
+# payment_token = Env().str('PAYMENTS_TOKEN')
 bot = telebot.TeleBot(token)
 
 chats = {}
@@ -368,9 +370,18 @@ def got_payment(message):
                      parse_mode='Markdown', reply_markup=markup)
 
 
-def run_bot():
-    bot.polling(none_stop=True)
+# def run_bot():
+#     bot.polling(none_stop=True)
 
 
-if __name__ == '__main__':
-    run_bot()
+class Command(BaseCommand):
+  	# Используется как описание команды обычно
+    help = 'Implemented to Django application telegram bot setup command'
+
+    def handle(self, *args, **kwargs):
+        bot.enable_save_next_step_handlers(delay=2) # Сохранение обработчиков
+        bot.load_next_step_handlers()								# Загрузка обработчиков
+        bot.infinity_polling()	
+
+# if __name__ == '__main__':
+#     run_bot()
