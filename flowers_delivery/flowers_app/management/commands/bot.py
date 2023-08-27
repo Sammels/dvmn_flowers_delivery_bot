@@ -198,8 +198,12 @@ def choose_bouquet(message, page=1):
                            reply_markup=markup)
             return bot.register_next_step_handler(message, choose_bouquet, page)
         except IndexError:
-            bot.send_message(message.chat.id, 'Выберите другую категорию')
-            main_menu(message)
+            bot.send_message(message.chat.id, 'К сожалению по выбранным критериям не было найдено цветов.'
+                                              'Вы можете выбрать букет из всего каталога')
+            get_catalog(message)
+        except FileNotFoundError:
+            print(os.path.abspath(os.curdir))
+
 
 
 def get_catalog(message, page=1):
